@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>소울매트 상세페이지 에이전트 V2</title>
+<style>
+  :root{
+    --bg:#f6f5f2; --panel:#fff; --ink:#1c1b19; --muted:#77726a; --line:#e2ded6;
+    --accent:#3f6b52; --accent-soft:#eaf1ec; --warn:#a8631a; --danger:#a33a2a;
+    --radius:10px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);
+    font:15px/1.6 -apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Pretendard",sans-serif}
+  header{background:var(--panel);border-bottom:1px solid var(--line);padding:14px 20px;
+    display:flex;align-items:baseline;gap:12px;position:sticky;top:0;z-index:10}
+  header h1{font-size:16px;margin:0;font-weight:650;letter-spacing:-.01em}
+  header .sub{color:var(--muted);font-size:12.5px}
+  header .spacer{flex:1}
+  button{font:inherit;border:1px solid var(--line);background:var(--panel);color:var(--ink);
+    padding:7px 14px;border-radius:8px;cursor:pointer}
+  button:hover{border-color:#c9c3b8}
+  button.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+  button.primary:hover{background:#355a45}
+  button.ghost{background:transparent}
+  button:disabled{opacity:.45;cursor:default}
+  .wrap{max-width:1280px;margin:0 auto;padding:20px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--radius);padding:16px;margin-bottom:14px}
+  .card h2{font-size:13px;margin:0 0 12px;color:var(--muted);font-weight:600;letter-spacing:.02em}
+  label{display:block;font-size:12.5px;color:var(--muted);margin:10px 0 4px}
+  input,textarea,select{width:100%;font:inherit;padding:8px 10px;border:1px solid var(--line);
+    border-radius:8px;background:#fdfcfa;color:var(--ink)}
+  textarea{min-height:56px;resize:vertical}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:0 16px}
+  .board{display:grid;grid-template-columns:220px 1fr 380px;gap:14px;align-items:start}
+  @media(max-width:1100px){.board{grid-template-columns:1fr}.grid{grid-template-columns:1fr}}
+  .stage{display:flex;gap:9px;align-items:flex-start;padding:7px 0;font-size:13.5px}
+  .dot{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--line);flex:0 0 20px;
+    display:grid;place-items:center;font-size:11px;color:var(--muted);background:#fff}
+  .stage.done .dot{background:var(--accent);border-color:var(--accent);color:#fff}
+  .stage.cur .dot{border-color:var(--accent);color:var(--accent);font-weight:700}
+  .stage.cur{font-weight:600}
+  .stage.todo{color:var(--muted)}
+  .pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:11.5px;border:1px solid var(--line)}
+  .pill.running{background:var(--accent-soft);border-color:#c5dbcd;color:var(--accent)}
+  .pill.waiting{background:#fdf2e2;border-color:#eed9b6;color:var(--warn)}
+  .pill.done{background:#eef3ef;color:var(--accent)}
+  .pill.failed,.pill.halted{background:#fbeceb;border-color:#eec9c4;color:var(--danger)}
+  .trace{max-height:62vh;overflow:auto;font-size:12.5px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+  .tr{padding:7px 0;border-bottom:1px dashed var(--line)}
+  .tr .h{display:flex;gap:7px;align-items:center}
+  .tr .nm{font-weight:650}
+  .tr .ms{color:var(--muted);margin-left:auto;font-size:11.5px}
+  .tr pre{margin:5px 0 0;white-space:pre-wrap;word-break:break-all;color:var(--muted);font-size:11.5px}
+  .tr.tool .nm{color:var(--accent)}
+  .tr.gate .nm{color:var(--warn)}
+  .tr.security .nm,.tr.fail .nm{color:var(--danger)}
+  .opt{display:block;width:100%;text-align:left;margin:7px 0;padding:11px 13px;border-radius:9px}
+  .opt.sel{border-color:var(--accent);background:var(--accent-soft)}
+  .opt .l{font-weight:600}
+  .opt .d{font-size:12.5px;color:var(--muted);margin-top:2px}
+  .meta{display:flex;gap:16px;font-size:12.5px;color:var(--muted);flex-wrap:wrap}
+  .meta b{color:var(--ink);font-weight:600}
+  .files a{display:block;padding:6px 0;font-size:13px;border-bottom:1px dashed var(--line);color:var(--accent);text-decoration:none}
+  .files a:hover{text-decoration:underline}
+  .runrow{display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px solid var(--line);cursor:pointer}
+  .runrow:hover{background:#fbfaf8}
+  .runrow .n{font-weight:600}
+  .runrow .m{color:var(--muted);font-size:12.5px;margin-left:auto}
+  .warnbox{background:#fdf2e2;border:1px solid #eed9b6;border-radius:9px;padding:11px;font-size:13px;margin-top:10px}
+  .errbox{background:#fbeceb;border:1px solid #eec9c4;border-radius:9px;padding:11px;font-size:13px;margin-top:10px}
+  iframe{width:100%;height:420px;border:1px solid var(--line);border-radius:8px;background:#fff}
+  .hide{display:none}
+  .vio{font-size:12.5px;padding:6px 0;border-bottom:1px dashed var(--line)}
+  .vio .rid{font-family:ui-monospace,monospace;color:var(--danger);font-weight:600}
+</style>
+</head>
+<body>
+<header>
+  <h1>소울매트 상세페이지 에이전트 <span style="color:var(--accent)">V2</span></h1>
+  <span class="sub">오픈마켓 상세페이지 에이전틱 워크플로</span>
+  <span class="spacer"></span>
+  <button class="ghost" onclick="showList()">실행 목록</button>
+</header>
+
+<div class="wrap">
+  <!-- 목록 화면 -->
+  <div id="listView">
+    <div class="card">
+      <h2>새 상품 페이지 만들기</h2>
+      <label>판매 유형</label>
+      <select id="profile"></select>
+      <div class="grid" id="fields"></div>
+      <div style="margin-top:14px"><button class="primary" onclick="createRun()">에이전트 실행</button></div>
+      <div id="createErr" class="errbox hide"></div>
+    </div>
+    <div class="card">
+      <h2>실행 목록</h2>
+      <div id="runs"></div>
+    </div>
+  </div>
+
+  <!-- 실행 보드 -->
+  <div id="runView" class="hide">
+    <div class="card" style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <div>
+        <div style="font-weight:650" id="rTitle">—</div>
+        <div class="sub" style="color:var(--muted);font-size:12.5px" id="rSub">—</div>
+      </div>
+      <span class="spacer" style="flex:1"></span>
+      <span class="pill" id="rStatus">—</span>
+      <button class="ghost" onclick="cancelRun()">중단</button>
+      <button class="ghost" onclick="resumeRun()">재개</button>
+      <a id="rZip" href="#"><button>ZIP 내려받기</button></a>
+    </div>
+
+    <div class="board">
+      <div class="card">
+        <h2>진행 단계</h2>
+        <div id="stages"></div>
+        <div style="margin-top:12px;font-size:12.5px;color:var(--muted)" id="stageNote"></div>
+      </div>
+
+      <div>
+        <div class="card" id="qCard" style="display:none">
+          <h2 id="qKind">사람 확인 필요</h2>
+          <div id="qText" style="font-weight:600;margin-bottom:4px"></div>
+          <div id="qCtx" style="font-size:13px;color:var(--muted)"></div>
+          <div id="qOpts"></div>
+          <textarea id="qFree" placeholder="직접 입력하거나 수정 요청을 적어주세요" style="margin-top:8px"></textarea>
+          <div style="margin-top:10px;display:flex;gap:8px">
+            <button class="primary" id="qSend" onclick="sendAnswer()">답변 보내기</button>
+            <button id="qDeny" class="hide" onclick="sendApproval(false)">거부</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>에이전트가 하는 말</h2>
+          <div id="says" style="font-size:13.5px;white-space:pre-wrap;max-height:280px;overflow:auto">—</div>
+        </div>
+
+        <div class="card" id="compCard" style="display:none">
+          <h2>컴플라이언스 리포트</h2>
+          <div id="compSum" class="meta"></div>
+          <div id="compList"></div>
+        </div>
+
+        <div class="card">
+          <h2>산출물</h2>
+          <div class="files" id="files">아직 없음</div>
+          <div id="preview"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>실행 트레이스</h2>
+        <div class="meta" id="usage" style="margin-bottom:10px"></div>
+        <div class="trace" id="trace"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let META=null, RUN=null, TRACE_N=0, TIMER=null, SEL=[];
+
+async function api(p,opt){const r=await fetch(p,opt);return r.json()}
+
+async function boot(){
+  META=await api('/api/meta');
+  document.getElementById('profile').innerHTML=META.profiles
+    .map(p=>`<option value="${p.id}">${p.label} — ${p.desc}</option>`).join('');
+  document.getElementById('fields').innerHTML=META.fields.map(f=>
+    `<div><label>${f.label}${f.required?' *':''}</label>`+
+    (f.multiline?`<textarea id="f_${f.key}"></textarea>`:`<input id="f_${f.key}">`)+`</div>`).join('');
+  loadRuns();
+}
+
+async function loadRuns(){
+  const d=await api('/api/runs');
+  document.getElementById('runs').innerHTML = d.runs.length? d.runs.map(r=>
+    `<div class="runrow" onclick="openRun('${r.run_id}')">
+       <span class="n">${esc(r.name)}</span>
+       <span class="pill ${r.status}">${r.status}</span>
+       <span class="m">${r.stage}/7 · $${(r.usage.cost_usd||0).toFixed(3)} · ${r.updated_at.slice(5,16)}</span>
+     </div>`).join('') : '<div style="color:var(--muted);font-size:13px">아직 실행이 없습니다.</div>';
+}
+
+async function createRun(){
+  const product={};
+  META.fields.forEach(f=>product[f.key]=document.getElementById('f_'+f.key).value.trim());
+  const err=document.getElementById('createErr');
+  if(!product.name){err.textContent='상품명은 필수입니다.';err.classList.remove('hide');return}
+  err.classList.add('hide');
+  const r=await api('/api/runs',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({product,profile:document.getElementById('profile').value})});
+  if(r.run_id) openRun(r.run_id); else {err.textContent=r.error||'실행 생성 실패';err.classList.remove('hide')}
+}
+
+function showList(){clearInterval(TIMER);TIMER=null;RUN=null;
+  document.getElementById('runView').classList.add('hide');
+  document.getElementById('listView').classList.remove('hide');loadRuns()}
+
+function openRun(id){
+  RUN=id;TRACE_N=0;SEL=[];
+  document.getElementById('trace').innerHTML='';
+  document.getElementById('listView').classList.add('hide');
+  document.getElementById('runView').classList.remove('hide');
+  document.getElementById('rZip').href='/api/run/'+id+'/export';
+  history.replaceState(null,'','#'+id);
+  poll(); clearInterval(TIMER); TIMER=setInterval(poll,1500);
+}
+
+async function poll(){
+  if(!RUN)return;
+  const s=await api('/api/run/'+RUN); if(s.error)return;
+  document.getElementById('rTitle').textContent=s.product.name||RUN;
+  document.getElementById('rSub').textContent=`${RUN} · ${s.profile}`+(s.session_id?` · 세션 ${s.session_id.slice(0,8)}`:'');
+  const st=document.getElementById('rStatus'); st.textContent=s.status; st.className='pill '+s.status;
+
+  document.getElementById('stages').innerHTML=META.stages.map((nm,i)=>{
+    const n=i+1, cls=n<s.stage?'done':(n===s.stage?'cur':'todo');
+    return `<div class="stage ${cls}"><span class="dot">${n<s.stage?'✓':n}</span><span>${nm}</span></div>`}).join('');
+  document.getElementById('stageNote').textContent=s.stage_note||'';
+
+  const u=s.usage||{};
+  document.getElementById('usage').innerHTML=
+    `<span>턴 <b>${u.turns||0}</b></span><span>비용 <b>$${(u.cost_usd||0).toFixed(4)}</b></span>`+
+    `<span>시간 <b>${u.elapsed_s||0}초</b></span><span>토큰 <b>${(u.input_tokens||0)+(u.output_tokens||0)}</b></span>`+
+    (s.halt_reason?`<span style="color:var(--danger)">${esc(s.halt_reason)}</span>`:'');
+
+  renderQuestion(s);
+  renderCompliance(s.compliance);
+  renderFiles(s);
+
+  const t=await api('/api/run/'+RUN+'/trace?after='+TRACE_N);
+  if(t.entries&&t.entries.length){
+    const box=document.getElementById('trace');
+    const says=[];
+    t.entries.forEach(e=>{
+      TRACE_N=e.seq;
+      if(e.kind==='assistant'){says.push(e.output);
+        const d=document.getElementById('says');
+        d.textContent=(d.textContent==='—'?'':d.textContent+'\n\n')+e.output; d.scrollTop=d.scrollHeight; return}
+      const cls=e.kind+(e.ok===false?' fail':'');
+      const nm=e.name||e.kind;
+      box.insertAdjacentHTML('beforeend',
+        `<div class="tr ${cls}"><div class="h"><span class="nm">${e.ok===false?'✕':'●'} ${esc(nm)}</span>
+         <span class="ms">${e.ms!==undefined?e.ms+'ms':''}</span></div>
+         ${e.input?`<pre>← ${esc(e.input)}</pre>`:''}${e.output?`<pre>→ ${esc(e.output)}</pre>`:''}</div>`);
+    });
+    box.scrollTop=box.scrollHeight;
+  }
+  if(['done','failed','halted'].includes(s.status)&&!s.pending_question&&!s.pending_approval){
+    clearInterval(TIMER);TIMER=setInterval(poll,5000);
+  }
+}
+
+function renderQuestion(s){
+  const c=document.getElementById('qCard');
+  const q=s.pending_question, a=s.pending_approval;
+  if(!q&&!a){c.style.display='none';return}
+  c.style.display='block';
+  document.getElementById('qDeny').classList.toggle('hide',!a);
+  document.getElementById('qFree').classList.toggle('hide',!!a);
+  if(a){
+    document.getElementById('qKind').textContent='이미지 생성 승인 (과금)';
+    document.getElementById('qText').textContent=`컷 ${a.cut_id} · ${a.n}장 · 예상 $${a.est_cost_usd}`;
+    document.getElementById('qCtx').textContent=a.prompt;
+    document.getElementById('qOpts').innerHTML='';
+    document.getElementById('qSend').textContent='승인';
+    document.getElementById('qSend').onclick=()=>sendApproval(true);
+    return;
+  }
+  document.getElementById('qKind').textContent='사람 결정이 필요합니다';
+  document.getElementById('qText').textContent=q.question;
+  document.getElementById('qCtx').textContent=q.context||'';
+  document.getElementById('qSend').textContent='답변 보내기';
+  document.getElementById('qSend').onclick=sendAnswer;
+  const cur=JSON.stringify(SEL);
+  document.getElementById('qOpts').innerHTML=(q.options||[]).map((o,i)=>
+    `<button class="opt ${SEL.includes(o.label)?'sel':''}" onclick="pick(${i},${q.multi_select})">
+      <div class="l">${esc(o.label)}</div>${o.description?`<div class="d">${esc(o.description)}</div>`:''}</button>`).join('');
+  window._q=q;
+}
+
+function pick(i,multi){
+  const o=window._q.options[i].label;
+  if(multi){SEL.includes(o)?SEL=SEL.filter(x=>x!==o):SEL.push(o)} else SEL=[o];
+  renderQuestion({pending_question:window._q,pending_approval:null});
+}
+
+async function sendAnswer(){
+  const free=document.getElementById('qFree').value.trim();
+  const ans=free?(SEL.length?SEL.concat([free]):[free]):SEL;
+  if(!ans.length){alert('선택하거나 내용을 적어주세요');return}
+  document.getElementById('qSend').disabled=true;
+  const r=await api('/api/run/'+RUN+'/answer',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({question_id:window._q.question_id,version:window._q.version,answer:ans})});
+  document.getElementById('qSend').disabled=false;
+  if(r.error){alert(r.error);return}
+  SEL=[];document.getElementById('qFree').value='';
+  document.getElementById('qCard').style.display='none';
+  clearInterval(TIMER);TIMER=setInterval(poll,1500);poll();
+}
+
+async function sendApproval(ok){
+  await api('/api/run/'+RUN+'/approve',{method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({approved:ok})});
+  document.getElementById('qCard').style.display='none';poll();
+}
+async function cancelRun(){await api('/api/run/'+RUN+'/cancel',{method:'POST'});poll()}
+async function resumeRun(){const r=await api('/api/run/'+RUN+'/resume',{method:'POST',
+  headers:{'Content-Type':'application/json'},body:JSON.stringify({})});
+  if(r.error)alert(r.error); clearInterval(TIMER);TIMER=setInterval(poll,1500);poll()}
+
+function renderCompliance(c){
+  const card=document.getElementById('compCard');
+  if(!c){card.style.display='none';return}
+  card.style.display='block';
+  document.getElementById('compSum').innerHTML=
+    `<span>규칙 <b>${c.rules_applied}</b>개 적용</span><span>차단 <b style="color:${c.block_count?'var(--danger)':'inherit'}">${c.block_count}</b></span>`+
+    `<span>경고 <b>${c.warn_count}</b></span><span>누락 <b>${(c.missing_required||[]).length}</b></span>`+
+    `<span class="pill ${c.passed?'done':'failed'}">${c.passed?'통과':'미통과'}</span>`;
+  const rows=(c.violations||[]).map(v=>
+    `<div class="vio"><span class="rid">${v.rule_id}</span> ${esc(v.matched)} — ${esc(v.label)}
+     <div style="color:var(--muted)">…${esc(v.context||'')}…</div></div>`).join('')
+    +(c.missing_required||[]).map(m=>`<div class="vio"><span class="rid">${m.id}</span> 누락 — ${esc(m.label)}</div>`).join('');
+  document.getElementById('compList').innerHTML=rows||'<div style="font-size:13px;color:var(--muted)">위반 없음</div>';
+}
+
+function renderFiles(s){
+  const f=s.artifacts||[];
+  document.getElementById('files').innerHTML= f.length? f.map(a=>
+    `<a href="/api/run/${RUN}/artifact/${encodeURIComponent(a.path)}" target="_blank">${esc(a.path)} · ${a.bytes.toLocaleString()}B</a>`).join('')
+    :'아직 없음';
+  const html=f.find(a=>a.path.endsWith('.html'));
+  document.getElementById('preview').innerHTML= html?
+    `<div style="margin-top:10px"><iframe sandbox src="/api/run/${RUN}/artifact/${encodeURIComponent(html.path)}"></iframe></div>`:'';
+}
+
+function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
+boot().then(()=>{if(location.hash.length>1)openRun(location.hash.slice(1))});
+</script>
+</body>
+</html>

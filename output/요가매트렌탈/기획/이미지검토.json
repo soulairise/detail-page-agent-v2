@@ -1,0 +1,52 @@
+{
+  "status": "approved",
+  "approval_source": "2026-09-09 사용자: 우선 이걸로 사용하자.",
+  "images": [
+    {
+      "id": "event",
+      "path": "output/imagegen/review/01_요가매트렌탈_행사장세팅_검토.png",
+      "use": "서비스 소개의 행사장 활용 장면",
+      "approved": true,
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "generated": true,
+      "sha256": "2bb2b861aa7b66355447e22f68c7c7b0c5a7cf2445ba76d75d2dc95185e0d65d",
+      "model": "gpt-image-2",
+      "human_approved": true
+    },
+    {
+      "id": "office",
+      "path": "output/imagegen/review/02_요가매트렌탈_기업웰니스_검토.png",
+      "use": "기업 웰니스 활용 예시",
+      "approved": true,
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "generated": true,
+      "sha256": "77cf4273768a9350f21295768e66e72d77e3b372d61fbdaf9bc782ac7ffcf022",
+      "model": "gpt-image-2",
+      "human_approved": true
+    },
+    {
+      "id": "studio",
+      "path": "output/imagegen/review/03_요가매트렌탈_스튜디오워크숍_검토.png",
+      "use": "스튜디오 워크숍 활용 예시",
+      "approved": true,
+      "width": 1536,
+      "height": 1024,
+      "format": "PNG",
+      "generated": true,
+      "sha256": "2c2a2bc26dc3280312c1ca6f95d40c5ea89a7a13ae4bed813796b080a8e6aa4d",
+      "model": "gpt-image-2",
+      "human_approved": true
+    }
+  ],
+  "checks": [
+    "매트 색·형태",
+    "인체·공간의 자연스러움",
+    "브랜드 분위기",
+    "실제 행사 사진으로 오인할 요소",
+    "최종 상세페이지에 사용 여부"
+  ]
+}

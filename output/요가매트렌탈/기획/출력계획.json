@@ -1,0 +1,84 @@
+{
+  "product_name": "소울매트_요가매트렌탈_행사와기업웰니스",
+  "status": "사용자 이미지 승인 후 출력 제작",
+  "width": 860,
+  "height_range": [
+    1200,
+    3000
+  ],
+  "jpeg_quality": 95,
+  "sections": [
+    {
+      "number": "01",
+      "name": "서비스소개와견적문의",
+      "height": 1660,
+      "images": [
+        "event"
+      ],
+      "purpose": "행사용 매트 렌탈 소개와 문의에 필요한 정보"
+    },
+    {
+      "number": "02",
+      "name": "기업웰니스와스튜디오활용",
+      "height": 2320,
+      "images": [
+        "office",
+        "studio"
+      ],
+      "purpose": "기업 담당자와 스튜디오 운영자의 활용 장면"
+    },
+    {
+      "number": "03",
+      "name": "문의부터배송회수까지",
+      "height": 1740,
+      "images": [],
+      "purpose": "문의·견적·확정·반입·사용·회수 순서"
+    },
+    {
+      "number": "04",
+      "name": "매트선택과관리확인",
+      "height": 1660,
+      "images": [],
+      "purpose": "실제 재고 사양·색상·관리 방식 확인; 사용자 사실 확인 후 확정"
+    },
+    {
+      "number": "05",
+      "name": "견적항목과대여계약조건",
+      "height": 1920,
+      "images": [],
+      "purpose": "대여료·기간·배송회수비·변경취소·파손분실 기준"
+    },
+    {
+      "number": "06",
+      "name": "자주묻는질문과상담안내",
+      "height": 1840,
+      "images": [],
+      "purpose": "문의 전 FAQ와 최종 CTA"
+    },
+    {
+      "number": "07",
+      "name": "상품정보와사용주의사항",
+      "height": 1800,
+      "images": [],
+      "purpose": "확정 사양·고시정보·사용 시 유의사항"
+    }
+  ],
+  "channels": {
+    "cafe24": {
+      "html": "소울매트_요가매트렌탈_카페24상세페이지.html",
+      "fragment": "소울매트_요가매트렌탈_카페24본문삽입.html",
+      "image_base_url": null
+    },
+    "smartstore_coupang": {
+      "format": "JPEG",
+      "filename": "{number}_{product_name}_{name}.jpeg"
+    }
+  },
+  "rules": [
+    "미승인 생성 이미지는 최종 출력 도구에서 거부",
+    "세로 길이는 주제별로 결정하고 텍스트·표·이미지 중간을 자르지 않음",
+    "레이아웃 밖 텍스트·겹침·860px 이외 폭·높이 범위 이탈을 검증",
+    "AI 장면은 연출 예시로 표시하고 실물 사양·납품실적 증거로 쓰지 않음",
+    "최종 html의 카페24 이미지 URL은 업로드 경로 확정 후 치환"
+  ]
+}
